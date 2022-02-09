@@ -1,0 +1,36 @@
+pragma solidity ^0.5.0;
+
+import "truffle/Assert.sol";
+
+// During testing, truffle creates fresh instance of contract being tested to the blockchain.
+// This import gets the address of the deployed contract
+import "truffle/DeployedAddresses.sol";
+import "../contracts/Adoption.sol";
+
+contract TestAdoption {
+    Adoption adoption = Adoption(DeployedAddresses.Adoption());
+
+    unit expectedPetId = 8;
+
+    // get the current contract's (TestAdoption) address
+    address expectedAdopter = address(this);
+
+    function testUserCanAdoptPet() public {
+        uint returnedId = adoption.adopt(expectedPetId);
+
+        Assert.equal(returnedId, expectedPetId, "Adoption of the expected pet should match what is returned");
+    }
+
+    function testGetAdopterAddressByPet() public {
+        address adopter = adoption.adopters(expectedPetId);
+
+        Assert.equal(adopter, expectedAdopter, "owner of the expected pet should be this contract");
+    }
+
+    function testGetAdopterAddressByPetIdInArray() public {
+
+        address[16] memory adopters = adoption.getAdopters();
+
+        Assert.equal(adopter[expectedPetId], expectedAdopter, "Owner of the expected pet should be this contract");
+    }
+}
